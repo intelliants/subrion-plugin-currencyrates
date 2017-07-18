@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module type="plugin" name="currencyrates">
+    <title>Currency Rates</title>
+    <summary>Makes possible currency rates to be updated automatically.</summary>
+    <author>Intelliants LLC</author>
+    <contributor>Intelliants LLC</contributor>
+    <version>1.1.0</version>
+    <date>2017-07-18</date>
+    <compatibility>4.1.5</compatibility>
+
+    <adminpages>
+        <page group="extensions" name="currencyrates" url="currency-rates/" menus="menu">Currency Rates</page>
+    </adminpages>
+
+    <configgroup name="currencyrates">Currency Rates</configgroup>
+    <config group="currencyrates" type="divider">General</config>
+    <config group="currencyrates" name="cr_enable" values="0,1" type="radio" description="Exchange rates provider">1</config>
+    <config group="currencyrates" name="cr_rates_provider" values="jsonrates" type="select" description="Exchange rates provider" show="cr_enable|1">jsonrates</config>
+    <config group="currencyrates" name="cr_provider_apikey" type="text" description="API key for exchange rates provider" show="cr_enable|1"><![CDATA[f0419431ff596992b212b68a6df57d80]]></config>
+
+    <cron name="Refresh currency exchange rates" description="Updates exchange rates based on the chosen rates provider">30 0,12 * * * modules/currencyrates/includes/cron/fetch-rates.php</cron>
+
+    <phrases>
+        <phrase category="admin" key="timestamp">Timestamp</phrase>
+    </phrases>
+
+    <install>
+        <sql>
+            <![CDATA[
+CREATE TABLE IF NOT EXISTS `{prefix}currency_rates_log` (
+    `id` mediumint(8) unsigned NOT NULL auto_increment,
+    `ts` datetime NOT NULL,
+    `success` tinyint(1) unsigned NOT NULL default 0,
+    `content` text NOT NULL,
+    PRIMARY KEY (`id`)
+) {mysql_version};
+            ]]>
+        </sql>
+    </install>
+
+    <uninstall>
+        <sql>
+            <![CDATA[
+DROP TABLE IF EXISTS `{prefix}currency_rates_log`;
+            ]]>
+        </sql>
+    </uninstall>
+</module>
